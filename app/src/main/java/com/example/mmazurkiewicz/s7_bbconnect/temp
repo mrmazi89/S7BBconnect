@@ -1,0 +1,71 @@
+package com.example.mmazurkiewicz.s7_bbconnect;
+
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+
+import Moka7.*;
+
+public class MainActivity extends ActionBarActivity {
+
+    Handler handler = new Handler();
+    S7Client client = new S7Client();
+
+    public int res;
+    public String ret = "";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        handler.post(runnableCode);     //Start operacji cyklicznych
+    }
+
+    public void connect2PLC(View v) {
+        try {
+            client.SetConnectionType(S7.S7_BASIC);
+            int res = client.ConnectTo("192.168.10.20",0,2); //S7-314
+        } catch (Exception e) {
+            ret = "EXC: " + e.toString();
+            Thread.interrupted();
+        }
+
+    }
+
+    public void disconnectPLC(View v){
+        client.Disconnect();
+    }
+
+    //Operacje cykliczne
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+
+            TextView connSTS = (TextView) findViewById(R.id.tV_ConnectionState);
+
+            if (res == 0) {//connection ok
+                connSTS.setText("Połączenie OK! :)");
+                connSTS.setBackgroundColor(Color.GREEN);
+                byte[] data = new byte[4];
+                res = client.ReadArea(S7.S7AreaDB,10,0,4, data);//Read DB10.DBB0 - REAL
+                ret = "Value of DB10.DBB0: " + S7.GetFloatAt(data,0);
+            } else {
+                connSTS.setText("Brak połączenia! :/");
+                connSTS.setBackgroundColor(Color.RED);
+                ret = "ERR: " + S7Client.ErrorText(res);
+            }
+
+            TextView txout = (TextView) findViewById(R.id.tV_Wartosc);
+            txout.setText(ret);
+
+            //Zdefiniowanie cyklu handlera 1000ms
+            handler.postDelayed(runnableCode, 1000);
+        }
+    };
+}
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.mmazurkiewicz.s7_bbconnect.MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:id="@+id/tV_ConnectionState"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:fontFamily="sans-serif"
+            android:textSize="24sp"
+            android:textColor="#000" />
+
+
+        <Button
+            android:text="Połącz ze sterownikiem PLC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/bttDisconnect"
+            android:layout_toRightOf="@+id/tV_Wartosc"
+            android:layout_toEndOf="@+id/tV_Wartosc"
+            android:layout_marginTop="0dp"
+            android:id="@+id/bttConnect"
+            android:onClick="connect2PLC" />
+
+        <Button
+            android:text="Zakończ połączenie ze sterownikiem PLc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:id="@+id/bttDisconnect"
+            android:layout_below="@+id/tV_Wartosc"
+            android:layout_centerHorizontal="true"
+            android:onClick="disconnectPLC" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Value of DB"
+            android:id="@+id/tV_Wartosc"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:textSize="18sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <Button
+            android:text="Pobierz źródło Data Block'u (AWL)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bttOpenDBsource"
+            android:onClick="readAWLsource" />
+
+        <Button
+            android:text="Pobierz źródło VAT'ciaka (TXT)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bttOpenVATsource"
+            android:onClick="readTXTsource" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tV_Content" />
+    </LinearLayout>
+
+</RelativeLayout>

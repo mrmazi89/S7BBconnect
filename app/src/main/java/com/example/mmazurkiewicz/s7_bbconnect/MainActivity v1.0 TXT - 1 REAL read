@@ -1,0 +1,68 @@
+package com.example.mmazurkiewicz.s7_bbconnect;
+
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+
+import Moka7.*;
+
+public class MainActivity extends ActionBarActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        handler.post(runnableCode);     //Start operacji cyklicznych
+    }
+
+    Handler handler = new Handler();
+    S7Client client = new S7Client();
+
+    //Operacje cykliczne
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+
+            new PlcReader().execute("");
+
+
+            //Zdefiniowanie cyklu handlera 1000ms
+            handler.postDelayed(runnableCode, 1000);
+        }
+    };
+
+    private class PlcReader extends AsyncTask<String, Void, String> {
+        String ret = "";
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                client.SetConnectionType(S7.S7_BASIC);
+                int res = client.ConnectTo("192.168.10.20",0,2); //S7-314
+
+                if (res == 0) {//connection ok
+                    byte[] data = new byte[4];
+                    res = client.ReadArea(S7.S7AreaDB,10,0,4, data);//Read DB10.DBB0 - REAL
+                    ret = "Value of DB10.DBB0: " + S7.GetFloatAt(data,0);
+                } else {
+                    ret = "ERR: " + S7Client.ErrorText(res);
+                }
+                client.Disconnect();
+            } catch (Exception e) {
+                ret = "EXC: " + e.toString();
+                Thread.interrupted();
+            }
+            return "executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            TextView txout = (TextView) findViewById(R.id.textView);
+            txout.setText(ret);
+        }
+    }
+}

@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -54,9 +55,140 @@
             android:layout_centerHorizontal="true"
             android:onClick="disconnectPLC" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        android:text="Adres IP PLC"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/TitleAdresIP"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:text="Rack"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/TitleRack"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:text="Slot"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/TitleSlot"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="bottom">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_IP1"
+                        android:layout_weight="1"
+                        android:maxLength="3"
+                        android:gravity="center"
+                        android:text="192" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_IP2"
+                        android:layout_weight="1"
+                        android:maxLength="3"
+                        android:gravity="center"
+                        android:text="168" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_IP3"
+                        android:layout_weight="1"
+                        android:maxLength="3"
+                        android:gravity="center"
+                        android:text="0" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_IP4"
+                        android:layout_weight="1"
+                        android:maxLength="3"
+                        android:gravity="center"
+                        android:text="1" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_Rack"
+                        android:layout_weight="1"
+                        android:maxLength="1"
+                        android:gravity="center"
+                        android:text="0" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/eT_Slot"
+                        android:layout_weight="1"
+                        android:maxLength="1"
+                        android:gravity="center"
+                        android:text="2" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
-            android:text="Value of DB"
             android:id="@+id/tV_Wartosc"
             android:layout_alignParentLeft="true"
             android:layout_marginTop="0dp"
@@ -66,12 +198,45 @@
             android:layout_height="50dp"
             android:gravity="center" />
 
-        <Button
-            android:text="Pobierz źródło Data Block'u (AWL)"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/bttOpenDBsource"
-            android:onClick="readAWLsource" />
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="Pobierz źródło Data Block'u (AWL)"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/bttOpenDBsource"
+                android:onClick="readAWLsource"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_width="200dp">
+
+                <TextView
+                    android:text="Numer DB"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/TitleDBnr"
+                    android:layout_weight="1"
+                    android:layout_width="100dp" />
+
+                <EditText
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/eT_DBnumber"
+                    android:layout_weight="1"
+                    android:layout_width="100dp"
+                    android:text="1"
+                    android:gravity="center_vertical|center"
+                    android:maxLength="5" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <Button
             android:text="Pobierz źródło VAT'ciaka (TXT)"
@@ -80,11 +245,37 @@
             android:id="@+id/bttOpenVATsource"
             android:onClick="readTXTsource" />
 
-        <TextView
-            android:text="TextView"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/tV_Content" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/tV_Content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/textView8"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/textView7"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/textView9"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

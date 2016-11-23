@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.graphics.Color;
 
@@ -37,19 +36,6 @@ public class MainActivity extends ActionBarActivity {
     static final String colName = "Name";
     static final String colType = "Type";
     static final String colComment = "Comment";
-
-    //Szablon w postaci lokalnych zmiennych
-    public String [] arrName = new String[99];
-    public String [] arrType = new String[99];
-
-    //Dane połączenia ze sterownikiem
-    public int plcIP1 = 0;
-    public int plcIP2 = 0;
-    public int plcIP3 = 0;
-    public int plcIP4 = 0;
-    public int plcRack = 0;
-    public int plcSlot = 0;
-    public String adresIP = "";
 
 
     @Override
@@ -100,39 +86,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void connect2PLC(View v){
-        //Przepisanie do zmiennych podanego adresu IP sterownika PLC
-        EditText ETIP1 = (EditText) findViewById(R.id.eT_IP1);
-        if(!ETIP1.getText().toString().matches("")) {
-            plcIP1 = Integer.valueOf(ETIP1.getText().toString());
-        }
-        EditText ETIP2 = (EditText) findViewById(R.id.eT_IP2);
-        if(!ETIP2.getText().toString().matches("")) {
-            plcIP2 = Integer.valueOf(ETIP2.getText().toString());
-        }
-        EditText ETIP3 = (EditText) findViewById(R.id.eT_IP3);
-        if(!ETIP3.getText().toString().matches("")) {
-            plcIP3 = Integer.valueOf(ETIP3.getText().toString());
-        }
-        EditText ETIP4 = (EditText) findViewById(R.id.eT_IP4);
-        if(!ETIP4.getText().toString().matches("")) {
-            plcIP4 = Integer.valueOf(ETIP4.getText().toString());
-        }
-        EditText ETRack = (EditText) findViewById(R.id.eT_Rack);
-        if(!ETRack.getText().toString().matches("")) {
-            plcRack = Integer.valueOf(ETRack.getText().toString());
-        }
-        EditText ETSlot = (EditText) findViewById(R.id.eT_Slot);
-        if(!ETSlot.getText().toString().matches("")) {
-            plcSlot = Integer.valueOf(ETSlot.getText().toString());
-        }
-        adresIP = plcIP1+"."+plcIP2+"."+plcIP3+"."+plcIP4;
-        if(!ETIP1.getText().toString().matches("") & !ETIP2.getText().toString().matches("") & !ETIP3.getText().toString().matches("")
-                & !ETIP4.getText().toString().matches("") & !ETRack.getText().toString().matches("") & !ETSlot.getText().toString().matches("") ) {//Ustawienie rozpoczęcia połączenia
-            ConnectionStart = true;
-        }else{
-            TextView txout = (TextView) findViewById(R.id.tV_Wartosc);
-            txout.setText("Niepoprawne dane połączenia z PLC");
-        }
+        ConnectionStart = true;
     }
 
     public void disconnectPLC(View v){
@@ -177,16 +131,17 @@ public class MainActivity extends ActionBarActivity {
             if (ConnectionStart){
                 try {
                     client.SetConnectionType(S7.S7_BASIC);
-                    int res = client.ConnectTo(adresIP,plcRack,plcSlot); //S7-314
-                    ConnectionState = client.Connected;
+                    int res = client.ConnectTo("192.168.10.20",0,2); //S7-314
 
 
                     if (res == 0) {//connection ok
                         byte[] data = new byte[4];
                         res = client.ReadArea(S7.S7AreaDB,10,4,4, data);//Read DB10.DBB0 - REAL
                         ret = "Wartość REAL DB10.DBD0: " + S7.GetFloatAt(data,0);
+                        ConnectionState = true;
                     } else {
                         ret = "Błąd: " + S7Client.ErrorText(res);
+                        ConnectionState = false;
                     }
                     client.Disconnect();
                 } catch (Exception e) {
@@ -283,7 +238,6 @@ public class MainActivity extends ActionBarActivity {
             String line;
             String lineSQL;
             boolean var2SQL = false;
-            int n = 0;
 
             sourceDB.execSQL("DROP TABLE IF EXISTS "+srcTable+";");
             sourceDB.execSQL("CREATE TABLE IF NOT EXISTS "+srcTable+" ("    //Tworzenie tabeli SQL
@@ -315,19 +269,15 @@ public class MainActivity extends ActionBarActivity {
                             + " (" + colName +", "+colType+", "+colComment+ ")"
                             + " VALUES ('" +part1_1+"', '"+part2_1+"', '');");
 
-                    //line = part1_1 +"   "+ part2_1;
-                    arrName [n] = part1_1;
-                    arrType [n] = part2_1;
-                    text.append(arrName [n] +"    "+ arrType[n]);
+                    line = part1_1 +"   "+ part2_1;
+                    text.append(line);
                     text.append('\n');
-                    n = n+1;
                 }
 
 
                 if (lineSQL.contains("STRUCT") & !lineSQL.contains("END_STRUCT")) {
                     var2SQL = true;
                 }
-
             }
             br.close();
         }

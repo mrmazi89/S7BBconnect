@@ -291,5 +291,5 @@ public class MainActivity extends ActionBarActivity {
 //Set the text
         tv.setText(text.toString());
     }
-
+// test versji 101b
 }

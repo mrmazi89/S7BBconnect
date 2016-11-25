@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import Moka7.*;
 
@@ -27,6 +29,10 @@ public class MainActivity extends ActionBarActivity {
     S7Client client = new S7Client();       //Klient połączenia Android <<>> PLC
     Handler PlcConnHandler = new Handler(); //Handler operacji cyklicznych
     SQLiteDatabase sourceDB= null;          //Baza danych SQLite
+
+    Date curTime = new Date();
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+    String curTimeStr = format.format(curTime);
 
     public boolean ConnectionState;
     public boolean ConnectionStart;
@@ -107,6 +113,7 @@ public class MainActivity extends ActionBarActivity {
         //Otwieranie bazy danych wzorca
         sourceDB = this.openOrCreateDatabase("srcDB", MODE_PRIVATE, null);
         sourceDB.execSQL("DROP TABLE IF EXISTS "+srcTable+";");//Czyszczenie bazy danych wzorca
+        sourceDB.execSQL("DROP TABLE IF EXISTS archiwumDB;");//Czyszczenie bazy danych wzorca
 
         PlcConnHandler.post(CyclicPlc);     //Start operacji cyklicznych
     }
@@ -160,6 +167,9 @@ public class MainActivity extends ActionBarActivity {
 
             //Wywołanie odczytu ze sterownika
             new PlcReader().execute("");
+            //Aktualizacja wartości czasuaktualnego
+            curTime = new Date();
+            curTimeStr = format.format(curTime);
 
             //Wystawienie informacji o statusie połączenia
             TextView connSTS = (TextView) findViewById(R.id.tV_ConnectionState);
@@ -196,9 +206,9 @@ public class MainActivity extends ActionBarActivity {
 
 
                     if (res == 0) {//connection ok
-                        while (arrType [n] != null && client.Connected) {      //poprzedni warunek arrType [n].length() >=3
+                        while (arrType [n] != null && client.Connected) {
                             byte[] data = new byte[arrAmountByte[n]];
-                            res = client.ReadArea(S7.S7AreaDB, Integer.valueOf(AddrElms_DBnr), arrStartByte [n], arrAmountByte [n], data);//Read //zamiast '10': Integer.getInteger(AddrElms_DBnr.getText().toString())
+                            res = client.ReadArea(S7.S7AreaDB, Integer.valueOf(AddrElms_DBnr), arrStartByte [n], arrAmountByte [n], data);//Read
                             ret = "";
 
                             if(arrType [n].contains("REAL")) {
@@ -224,6 +234,7 @@ public class MainActivity extends ActionBarActivity {
                             }
                             text4.append(retValue);
                             text4.append('\n');
+                            arrValue [n] = retValue;
                             n=n+1;
                         }
                     } else {
@@ -251,6 +262,18 @@ public class MainActivity extends ActionBarActivity {
                 TextView tv4 = (TextView)findViewById(R.id.tV_Content_4);
                 tv4.setText(text4.toString());
                 text4.setLength(0);
+                int n = 0;
+                String sqlColumns = "";
+                String sqlValues = "";
+
+                while (arrType [n] != null){
+                    sqlColumns = sqlColumns +", "+ arrName[n];
+                    sqlValues = sqlValues + ", '"+ arrValue[n] +"'";
+                    n=n+1;
+                }
+
+                sourceDB.execSQL("INSERT INTO archiwumDB ( Czas"+ sqlColumns + ")"
+                        + " VALUES ('"+curTimeStr+"'" + sqlValues + ");");
             }
         }
     }
@@ -451,6 +474,17 @@ public class MainActivity extends ActionBarActivity {
             tv2.setText(text2.toString());
             TextView tv3 = (TextView) findViewById(R.id.tV_Content_3);
             tv3.setText(text3.toString());
+
+            sourceDB.execSQL("DROP TABLE IF EXISTS archiwumDB;");
+            int n = 0;
+            String SQLqueryAdd = "";
+
+            while(arrName [n] != null){
+                SQLqueryAdd =  SQLqueryAdd + ", "+arrName [n]+" STRING";
+                n=n+1;
+            }
+            sourceDB.execSQL("CREATE TABLE IF NOT EXISTS archiwumDB (ID INTEGER PRIMARY KEY AUTOINCREMENT, Czas STRING"+SQLqueryAdd+");");
+
         }
     }
 

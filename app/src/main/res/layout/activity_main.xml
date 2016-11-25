@@ -239,11 +239,11 @@
         </LinearLayout>
 
         <Button
-            android:text="Pobierz źródło VAT'ciaka (TXT)"
+            android:text="Wyślij archiwum TXT mail'em"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bttOpenVATsource"
-            android:onClick="readTXTsource" />
+            android:onClick="sendMail" />
 
         <LinearLayout
             android:orientation="horizontal"

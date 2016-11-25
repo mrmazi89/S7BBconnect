@@ -69,12 +69,15 @@ public class MainActivity extends ActionBarActivity {
     public int plcSlot = 0;
     public String adresIP = "";
 
+    File file = new File(Environment.getExternalStorageDirectory() + "/StoreFile.txt");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        file.delete();
         //Tworzenie folderu dla źródeł danych TXT/AWL
         File folder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + "S7BBsources");
@@ -265,15 +268,28 @@ public class MainActivity extends ActionBarActivity {
                 int n = 0;
                 String sqlColumns = "";
                 String sqlValues = "";
+                String TxtNewLine = "";
 
                 while (arrType [n] != null){
                     sqlColumns = sqlColumns +", "+ arrName[n];
                     sqlValues = sqlValues + ", '"+ arrValue[n] +"'";
+                    TxtNewLine =TxtNewLine + arrValue[n]+"; ";
                     n=n+1;
                 }
 
                 sourceDB.execSQL("INSERT INTO archiwumDB ( Czas"+ sqlColumns + ")"
                         + " VALUES ('"+curTimeStr+"'" + sqlValues + ");");
+
+                String toWriteData = TxtNewLine +"\n";
+
+                try {
+                    FileOutputStream out = new FileOutputStream(file, true);
+                    out.write(toWriteData.toString().getBytes());
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Błąd zapisu do pliku!");
+                }
             }
         }
     }
@@ -344,13 +360,14 @@ public class MainActivity extends ActionBarActivity {
 
     public void readAWLsource (View v)
     {
+        file = new File(Environment.getExternalStorageDirectory() + "/StoreFile.txt");
         if(!ConnectionStart) {
             EditText ETDBnr = (EditText) findViewById(R.id.eT_DBnumber);
             if (!ETDBnr.getText().toString().matches("")) {
                 AddrElms_DBnr = String.valueOf(ETDBnr.getText().toString());
             }
 //Get the text file
-            File srcAWL = new File(Environment.getExternalStorageDirectory() + "/S7BBsources/SourceAWL.AWL");
+            File srcAWL = new File(Environment.getExternalStorageDirectory() + "/S7BBsources/DB"+AddrElms_DBnr+".awl");
 
 //Read text from file
             StringBuilder text1 = new StringBuilder();
@@ -478,13 +495,25 @@ public class MainActivity extends ActionBarActivity {
             sourceDB.execSQL("DROP TABLE IF EXISTS archiwumDB;");
             int n = 0;
             String SQLqueryAdd = "";
+            String TxtNewLine = "";
 
             while(arrName [n] != null){
                 SQLqueryAdd =  SQLqueryAdd + ", "+arrName [n]+" STRING";
+                TxtNewLine = TxtNewLine +arrName[n]+ "; " ;
                 n=n+1;
             }
             sourceDB.execSQL("CREATE TABLE IF NOT EXISTS archiwumDB (ID INTEGER PRIMARY KEY AUTOINCREMENT, Czas STRING"+SQLqueryAdd+");");
 
+            String toWriteData = TxtNewLine +"\n";
+
+            try {
+                FileOutputStream out = new FileOutputStream(file, true);
+                out.write(toWriteData.toString().getBytes());
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Błąd zapisu do pliku!");
+            }
         }
     }
 
